@@ -9,6 +9,7 @@ export default class SimpleShape {
       wireframe : true,
       color : color,
       transparent: true,
+      needsUpdate: true,
       opacity: opacity
     })
     let mesh = new THREE.Mesh(geometry, material)

@@ -10,16 +10,24 @@ export default class WireframeShapeSwirl {
     this.geometry = new THREE.IcosahedronGeometry(1)
     this.container = new THREE.Object3D()
 
+    let color = 200
+    let colorIncrease = 255 / shapeNum
+
     for(let i = 0; i < shapeNum; i++) {
       this.material = new THREE.MeshBasicMaterial({
         wireframe : true,
-        color : tinycolor({h : i / shapeNum * 255, s : 100, l : 50}).toHexString(),
+        color : tinycolor({h : color, s : 100, l : 50}).toHexString(),
         transparent: true,
         opacity: 0.5
       })
 
+      color += colorIncrease
+      if(color > 255) {
+        color = 0
+      }
+
       let mesh = new THREE.Mesh(this.geometry, this.material)
-      let newScale = 1 + (i * 1.1)
+      let newScale = 1 + (i * 1.01)
       mesh.scale.set(newScale, newScale, newScale)
       let newRotation = i * 0.08
       mesh.rotation.set(newRotation, newRotation, newRotation)
@@ -46,7 +54,7 @@ export default class WireframeShapeSwirl {
       let mesh = this.container.children[i]
       let soundTotal = 0
       if(window.total) {
-        soundTotal = (window.total * i) * 0.00003
+        soundTotal = (window.total * i) * 0.000003
       }
 
       let newRX = this.rX * (i * 0.02) + soundTotal

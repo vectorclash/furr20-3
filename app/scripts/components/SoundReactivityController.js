@@ -1,6 +1,6 @@
 export default class SoundReactivityController {
   constructor() {
-    let fftSize = 32
+    let fftSize = 128
     let context
     let source, sourceJs
     let microphone
