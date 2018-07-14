@@ -6,13 +6,15 @@ import TweenMax from 'gsap'
 import Renderer from './components/Renderer'
 import SoundReactivityController from './components/SoundReactivityController'
 import ParticleField from './components/ParticleField'
+import WireframeShapeSwirl from './components/WireframeShapeSwirl'
+import SimpleShape from './components/SimpleShape'
 
 let renderer
 let scene, camera
-let mainContainer, particlesOne, particlesTwo
+let mainContainer, particlesOne, particlesTwo, shapeSwirl, containmentShape
 
 function init() {
-  renderer = new Renderer(0x000000)
+  renderer = new Renderer(0x230133)
   document.body.appendChild(renderer.rendererElement)
 
   scene = renderer.scene
@@ -39,6 +41,12 @@ function init() {
     }
   )
 
+  shapeSwirl = new WireframeShapeSwirl(42)
+  mainContainer.add(shapeSwirl.container)
+
+  containmentShape = new SimpleShape(50, 0xff185d, 1)
+  mainContainer.add(containmentShape)
+
   let soundReactivityController = new SoundReactivityController()
 
   TweenMax.ticker.addEventListener('tick', loop)
@@ -52,9 +60,9 @@ function loop() {
   let soundScaleTwo = 0
 
   if(window.total) {
-    soundTotal = window.total * 0.000003
-    soundScaleOne = 0.9 + window.total * 0.00003
-    soundScaleTwo = 0.8 + window.total * 0.00009
+    soundTotal = window.total * 0.000001
+    soundScaleOne = 0.9 + window.total * 0.00001
+    soundScaleTwo = 0.8 + window.total * 0.00005
 
     particlesOne.particleSystem.scale.set(
       soundScaleOne,
@@ -75,6 +83,22 @@ function loop() {
     particlesTwo.particleSystem.rotation.x -= 0.0021 + soundTotal
     particlesTwo.particleSystem.rotation.y += 0.00191 + soundTotal
     particlesTwo.particleSystem.rotation.z -= 0.002 + soundTotal
+
+    containmentShape.rotation.x += 0.01 + soundTotal
+    containmentShape.rotation.y -= 0.01 + soundTotal
+    containmentShape.rotation.z -= 0.01 + soundTotal
+
+    for (var i = 0; i < window.byteArray.length; i++) {
+      let soundModifier = window.byteArray[i] * 0.05
+
+      containmentShape.children[0].geometry.vertices[i].x = containmentShape.baseVertices[i].x * noise.perlin3(i, soundModifier, containmentShape.children[0].geometry.vertices[i].x)
+
+      containmentShape.children[0].geometry.vertices[i].y = containmentShape.baseVertices[i].y * noise.perlin3(i, soundModifier, containmentShape.children[0].geometry.vertices[i].y)
+
+      containmentShape.children[0].geometry.vertices[i].z = containmentShape.baseVertices[i].z * noise.perlin3(i, soundModifier, containmentShape.children[0].geometry.vertices[i].z)
+    }
+
+    containmentShape.children[0].geometry.verticesNeedUpdate = true
   }
 }
 
